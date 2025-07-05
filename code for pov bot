@@ -1,0 +1,54 @@
+#include <Servo.h>
+
+
+const int joyX = A2;       
+const int joyY = A3;       
+
+
+const int servoPin1 = 9;     
+const int servoPin2 = 10;    
+
+Servo servo1;
+Servo servo2;
+
+int previousAngleX = 90;     
+int previousAngleY = 90;     
+
+const int deadZoneCenter = 512;
+const int deadZoneSize = 20;
+
+void setup() {
+  servo1.attach(servoPin1);
+  servo2.attach(servoPin2);
+  Serial.begin(9600);
+}
+
+void loop() {
+  int valX = analogRead(joyX);
+  int valY = analogRead(joyY);
+
+
+  if (abs(valX - deadZoneCenter) >= deadZoneSize) {
+    int angleX = map(valX, 0, 1023, 45, 135);
+    if (abs(angleX - previousAngleX) > 2) {
+      servo1.write(angleX);
+      previousAngleX = angleX;
+    }
+  }
+
+  if (abs(valY - deadZoneCenter) >= deadZoneSize) {
+    int angleY = map(valY, 0, 1023, 0, 180);
+    if (abs(angleY - previousAngleY) > 2) {
+      servo2.write(angleY);
+      previousAngleY = angleY;
+    }
+  }
+
+
+  Serial.print("X:");
+  Serial.print(valX);
+  Serial.print("  Y:");
+  Serial.println(valY);
+
+  delay(100);  
+}
